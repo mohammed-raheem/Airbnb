@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Axios from "axios";
+import { Link, useHistory } from "react-router-dom";
+// import { message } from "antd";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
@@ -10,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 
+// import { register } from "../api";
 import Page from "./Page";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,22 +35,51 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
-  const [username, setUsername] = useState();
+  let history = useHistory();
+
+  const [firstName, setFirstName] = useState();
+  const [middleName, setMiddleName] = useState();
+  const [lastName, setLastName] = useState();
+  const [phone, setPhone] = useState();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await Axios.post("http://localhost:8080/register", {
-        username: username,
-        email: email,
-        password: password,
-      });
-      console.log("user registered");
-    } catch (e) {
-      console.log("there is some errors");
+      const response = await Axios.post(
+        "https://airbnb-iq.herokuapp.com/v1/register",
+        { firstName, middleName, lastName, phone, email, password }
+      );
+      if (response.data.status) {
+        console.log(response);
+        localStorage.setItem("airbnbToken", response.data.data.data.token);
+        history.push("/otp");
+      } else {
+        console.log("There is an error");
+      }
+    } catch (error) {
+      console.log("there is an error");
     }
+
+    // USING FETCH INSTEAD OF AXIOS
+    // register(
+    //   { firstName, middleName, lastName, phone, email, password },
+    //   (err, result) => {
+    //     if (err) throw err;
+    //     if (!result.status) {
+    //       Object.keys(result.errMsg).forEach((key) => {
+    //         message.error(result.errMsg[key]);
+    //       });
+    //     } else {
+    //       console.log(result);
+    //       localStorage.setItem("token", result.data.token);
+    //       localStorage.setItem("user", JSON.stringify(result.data.user));
+    //       // router.replace("/otp");
+    //     }
+    //   }
+    // );
   };
 
   const classes = useStyles();
@@ -64,32 +95,56 @@ export default function SignUp() {
             Sign up
           </Typography>
           <form onSubmit={handleSubmit} className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
+            <Grid container spacing={1}>
+              <Grid item xs={4}>
                 <TextField
-                  autoComplete="fname"
-                  name="userName"
+                  autoComplete="firstName"
+                  name="firstName"
                   variant="outlined"
                   required
                   fullWidth
-                  id="userName"
-                  label="User Name"
+                  id="firstName"
+                  label="First Name"
                   autoFocus
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               </Grid>
-              {/* <Grid item xs={12} sm={6}>
+              <Grid item xs={4}>
                 <TextField
+                  autoComplete="middleName"
+                  name="middleName"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="middleName"
+                  label="Middle Name"
+                  onChange={(e) => setMiddleName(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={4}>
+                <TextField
+                  autoComplete="lastName"
+                  name="lastName"
                   variant="outlined"
                   required
                   fullWidth
                   id="lastName"
                   label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
-                  onChange={(e) => setLname(e.target.value)}
+                  onChange={(e) => setLastName(e.target.value)}
                 />
-              </Grid> */}
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="phone"
+                  label="Phone Number"
+                  name="phone"
+                  autoComplete="phone"
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"

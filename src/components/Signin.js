@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Axios from "axios";
+import { Link, useHistory } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
 import Paper from "@material-ui/core/Paper";
-import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
@@ -13,25 +12,13 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import Page from "./Page";
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
-
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100vh",
   },
   image: {
-    backgroundImage: "url(https://source.unsplash.com/random)",
+    backgroundImage:
+      "url(https://images.unsplash.com/photo-1559261567-2f844618aabf?ixlib=rb-1.2.1&auto=format&fit=crop&w=634&q=80)",
     backgroundRepeat: "no-repeat",
     backgroundColor:
       theme.palette.type === "light"
@@ -60,6 +47,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignIn(props) {
+  let history = useHistory();
+
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
 
@@ -67,20 +56,43 @@ export default function SignIn(props) {
     e.preventDefault();
 
     try {
-      const res = await Axios.post("/login", {
-        email,
-        password,
-      });
-
-      if (res.data) {
+      const response = await Axios.post(
+        "https://airbnb-iq.herokuapp.com/v1/login",
+        { email, password }
+      );
+      if (response.data.status) {
+        localStorage.setItem("airbnbToken", response.data.data.token);
         props.setLoggedIn(true);
-        localStorage.setItem("airbnbToken", res.data.token);
-        localStorage.setItem("airbnbEmail", res.data.email);
-        localStorage.setItem("airbnbAvatar", res.data.avatar);
+        history.push("/");
+      } else {
+        console.log("incorrect user or password");
       }
-    } catch (e) {
-      console.log("there is something wrong happened");
+    } catch (error) {
+      console.log("there is an error");
     }
+
+    // USING FETCH INSTEAD OF AXIOS
+    // var myHeaders = new Headers();
+    // myHeaders.append("Content-Type", "application/json");
+
+    // var raw = JSON.stringify({ email, password });
+
+    // var requestOptions = {
+    //   method: "POST",
+    //   headers: myHeaders,
+    //   body: raw,
+    //   redirect: "follow",
+    // };
+
+    // fetch("https://airbnb-iq.herokuapp.com/v1/login", requestOptions)
+    //   .then((response) => response.json())
+    //   .then((result) => {
+    //     if (result.status) {
+    //       localStorage.setItem("airbnbToken", result.data.token);
+    //       props.setLoggedIn(true);
+    //     }
+    //   })
+    //   .catch((error) => console.log("error", error));
   };
 
   const classes = useStyles();
@@ -138,9 +150,6 @@ export default function SignIn(props) {
                   </Link>
                 </Grid>
               </Grid>
-              <Box mt={5}>
-                <Copyright />
-              </Box>
             </form>
           </div>
         </Grid>

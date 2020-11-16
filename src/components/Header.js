@@ -6,6 +6,8 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 
+import NotificationBadge from "./NotificationBadge";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -33,8 +35,7 @@ export default function Header(props) {
   const handleLogout = () => {
     props.setLoggedIn(false);
     localStorage.removeItem("airbnbToken");
-    localStorage.removeItem("airbnbUsername");
-    localStorage.removeItem("airbnbAvatar");
+    localStorage.removeItem("user");
   };
 
   const loggedOutBtns = () => {
@@ -54,6 +55,7 @@ export default function Header(props) {
     return (
       <>
         <button onClick={handleLogout}>Sign Out</button>
+        <NotificationBadge />
       </>
     );
   };

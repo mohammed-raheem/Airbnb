@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -46,23 +46,130 @@ const useStyles = makeStyles((theme) => ({
 function Home() {
   const classes = useStyles();
 
-  // const [username, setUsername] = useState();
-  // const [email, setEmail] = useState();
-  // const [password, setPassword] = useState();
+  // Home States
+  const [province, setProvince] = useState();
+  const [city, setCity] = useState();
+  const [district, setDistrict] = useState();
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   try {
-  //     await Axios.post("/register", {
-  //       username: username,
-  //       email: email,
-  //       password: password,
-  //     });
-  //     console.log("user registered");
-  //   } catch (e) {
-  //     console.log("there is some errors");
-  //   }
-  // };
+  const [provincesIds, setProvincesIds] = useState([]);
+  const [provincesNames, setProvincesNames] = useState([]);
+  const [citiesIds, setCitiesIds] = useState([]);
+  const [citiesParentsIds, setCitiesParentsIds] = useState([]);
+  const [citiesNames, setCitiesNames] = useState([]);
+  const [districtsIds, setDistrictsIds] = useState();
+  const [districtsNames, setDistrictsNames] = useState();
+
+  const [disabledCity, setDisabledCity] = useState(true);
+  const [disabledDistrict, setDisabledDistrict] = useState(true);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const response = await Axios.get(
+          "https://airbnb-iq.herokuapp.com/v1/location"
+        );
+        // Fetching Provinces
+        setProvincesNames(response.data.data.map((item) => item.name));
+        setProvincesIds(response.data.data.map((item) => item.id));
+
+        // Fetching Cities
+        setCitiesNames(
+          response.data.data.map((item) => {
+            return item.cities.map((item2) => item2.name);
+          })
+        );
+        setCitiesIds(
+          response.data.data.map((item) => {
+            return item.cities.map((item2) => item2.id);
+          })
+        );
+        setCitiesParentsIds(
+          response.data.data.map((item) => {
+            return item.cities.map((item2) => item2.provinceID);
+          })
+        );
+
+        // Fetching Districts
+        setDistrictsNames(
+          response.data.data.map((item) => {
+            return item.cities.map((item2) => {
+              return item2.districts.map((item3) => item3.name);
+            });
+          })
+        );
+        setDistrictsIds(
+          response.data.data.map((item) => {
+            return item.cities.map((item2) => {
+              return item2.districts.map((item3) => item3.id);
+            });
+          })
+        );
+
+        // console.log(response.data.data);
+
+        setIsLoading(false);
+      } catch (e) {
+        console.log("Failed to fetch provinces");
+      }
+    };
+    fetchLocations();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    let config = {};
+
+    if (city) {
+      config = {
+        method: "get",
+        url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${city[0]}`,
+      };
+    } else if (district) {
+      config = {
+        method: "get",
+        url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${district[0][0]}`,
+      };
+    }
+
+    Axios(config)
+      .then(function (response) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  let provinceName = [],
+    provinceId = [],
+    cityName = [],
+    cityId = [],
+    cityParentId = [],
+    districtName = [],
+    districtId = [];
+
+  if (isLoading) {
+    provinceName = ["Loading"];
+    cityName = ["Loading"];
+    districtName = ["Loading"];
+  } else {
+    provinceName = provincesNames.map((name) => name);
+    provinceId = provincesIds.map((id) => id);
+
+    cityName = citiesNames.map((name) => name);
+    cityId = citiesIds.map((id) => id);
+    cityParentId = citiesParentsIds.map((id) => id);
+
+    districtName = districtsNames.map((name) => name);
+    districtId = districtsIds.map((id) => id);
+
+    console.log(cityParentId);
+    // console.log(citiesNames);
+    // console.log(districtsNames);
+  }
 
   return (
     <Page title="Home">
@@ -71,7 +178,7 @@ function Home() {
           <Typography className={classes.mainTitle} component="h1" variant="h2">
             Where do you want to live?
           </Typography>
-          <form className={classes.form} noValidate>
+          <form className={classes.form} onSubmit={handleSubmit} noValidate>
             <Grid container spacing={2}>
               <Grid item xs={3}>
                 <FormControl
@@ -85,13 +192,19 @@ function Home() {
                   <Select
                     labelId="demo-simple-select-filled-label"
                     id="demo-simple-select-filled"
+                    onChange={(e) => {
+                      setProvince(e.target.value);
+                      setDisabledCity(false);
+                    }}
                   >
-                    <MenuItem value="">
+                    {/* <MenuItem value="">
                       <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    </MenuItem> */}
+                    {provinceName.map((item, index) => (
+                      <MenuItem value={provinceId[index]}>
+                        {provinceName[index]}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -100,6 +213,7 @@ function Home() {
                   size="small"
                   variant="filled"
                   className={classes.selectField}
+                  disabled={disabledCity}
                 >
                   <InputLabel id="demo-simple-select-filled-label">
                     City
@@ -107,13 +221,22 @@ function Home() {
                   <Select
                     labelId="demo-simple-select-filled-label"
                     id="demo-simple-select-filled"
+                    onChange={(e) => {
+                      setCity(e.target.value);
+                      setDisabledDistrict(false);
+                    }}
                   >
-                    <MenuItem value="">
+                    {/* <MenuItem value="">
                       <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    </MenuItem> */}
+
+                    {cityName.map((item, index) =>
+                      cityParentId[index] == province ? (
+                        <MenuItem value={cityId[index]}>
+                          {cityName[index]}
+                        </MenuItem>
+                      ) : null
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
@@ -122,6 +245,7 @@ function Home() {
                   size="small"
                   variant="filled"
                   className={classes.selectField}
+                  disabled={disabledDistrict}
                 >
                   <InputLabel id="demo-simple-select-filled-label">
                     District
@@ -129,13 +253,21 @@ function Home() {
                   <Select
                     labelId="demo-simple-select-filled-label"
                     id="demo-simple-select-filled"
+                    onChange={(e) => setDistrict(e.target.value)}
                   >
-                    <MenuItem value="">
+                    {/* <MenuItem value="">
                       <em>None</em>
-                    </MenuItem>
-                    <MenuItem value={10}>Ten</MenuItem>
-                    <MenuItem value={20}>Twenty</MenuItem>
-                    <MenuItem value={30}>Thirty</MenuItem>
+                    </MenuItem> */}
+                    {/* 
+                      FIXME: Ask Hassan to add ParentId for the districts and use it instead of cityParentId 
+                    */}
+                    {districtName.map((item, index) =>
+                      cityParentId[index] == province ? (
+                        <MenuItem value={districtId[index]}>
+                          {districtName[index]}
+                        </MenuItem>
+                      ) : null
+                    )}
                   </Select>
                 </FormControl>
               </Grid>
