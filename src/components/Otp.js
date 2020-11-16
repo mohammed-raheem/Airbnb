@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Axios from "axios";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import Avatar from "@material-ui/core/Avatar";
