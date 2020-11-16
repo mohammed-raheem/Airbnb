@@ -1,31 +1,36 @@
-import React from "react";
-import ImageUploader from "react-images-upload";
+import { Upload } from "antd";
+const UploadImages = ({ setFileList, fileList }) => {
+  const onChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
 
-class UploadImages extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { pictures: [] };
-    this.onDrop = this.onDrop.bind(this);
-  }
+  const onPreview = async (file) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow.document.write(image.outerHTML);
+  };
 
-  onDrop(picture) {
-    this.setState({
-      pictures: this.state.pictures.concat(picture),
-    });
-  }
-
-  render() {
-    return (
-      <ImageUploader
-        withPreview
-        withIcon={true}
-        buttonText="Choose images"
-        onChange={this.onDrop}
-        imgExtension={[".jpg", ".gif", ".png", ".gif"]}
-        maxFileSize={5242880}
-      />
-    );
-  }
-}
+  return (
+    <Upload
+      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+      listType="picture-card"
+      fileList={fileList}
+      onChange={onChange}
+      onPreview={onPreview}
+      beforeUpload={() => false}
+    >
+      {fileList.length < 1 && "+ Image"}
+    </Upload>
+  );
+};
 
 export default UploadImages;

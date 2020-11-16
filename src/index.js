@@ -17,13 +17,21 @@ import NotificationsPage from "./components/NotificationsPage";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(
-    Boolean(localStorage.getItem("user"))
+    Boolean(localStorage.getItem("airbnbToken"))
+  );
+
+  const [isOwner, setIsOwner] = useState(
+    Boolean(localStorage.getItem("owner"))
   );
 
   return (
     <BrowserRouter>
       <CssBaseline />
-      <Header loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <Header
+        loggedIn={loggedIn}
+        setLoggedIn={setLoggedIn}
+        setIsOwner={setIsOwner}
+      />
       <Switch>
         <Route path="/" exact>
           <Home />
@@ -52,7 +60,7 @@ function App() {
           <Property />
         </Route>
         <Route path="/post-property" exact>
-          <PostProperty />
+          {isOwner ? <PostProperty /> : <Redirect to="/" />}
         </Route>
         <Route path="/notifications" exact>
           <NotificationsPage />

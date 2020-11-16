@@ -166,7 +166,7 @@ function Home() {
     districtName = districtsNames.map((name) => name);
     districtId = districtsIds.map((id) => id);
 
-    console.log(cityParentId);
+    // console.log(cityParentId);
     // console.log(citiesNames);
     // console.log(districtsNames);
   }

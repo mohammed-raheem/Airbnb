@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import Stepper from "@material-ui/core/Stepper";
@@ -50,24 +50,58 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const steps = ["Property Description", "Address", "Images"];
-
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <Description />;
-    case 1:
-      return <Address />;
-    case 2:
-      return <Images />;
-    default:
-      throw new Error("Unknown step");
-  }
-}
-
 export default function Checkout() {
   const classes = useStyles();
   const [activeStep, setActiveStep] = React.useState(0);
+
+  // Property description states
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState();
+  const [propertySize, setPropertySize] = useState();
+  const [bedRooms, setBedRooms] = useState(0);
+  const [bathRooms, setBathRooms] = useState(0);
+
+  // Property address states
+  const [province, setProvince] = useState(0);
+  const [city, setCity] = useState(0);
+  const [district, setDistrict] = useState(0);
+
+  // Property images states
+  const [fileList, setFileList] = useState([]);
+
+  const steps = ["Property Description", "Address", "Images"];
+
+  function getStepContent(step) {
+    switch (step) {
+      case 0:
+        return (
+          <Description
+            setTitle={setTitle}
+            setDescription={setDescription}
+            setPrice={setPrice}
+            setPropertySize={setPropertySize}
+            setBedRooms={setBedRooms}
+            setBathRooms={setBathRooms}
+          />
+        );
+      case 1:
+        return (
+          <Address
+            province={province}
+            setProvince={setProvince}
+            city={city}
+            setCity={setCity}
+            district={district}
+            setDistrict={setDistrict}
+          />
+        );
+      case 2:
+        return <Images setFileList={setFileList} fileList={fileList} />;
+      default:
+        throw new Error("Unknown step");
+    }
+  }
 
   const handleNext = () => {
     setActiveStep(activeStep + 1);
@@ -78,7 +112,51 @@ export default function Checkout() {
   };
 
   const handleComplete = () => {
-    console.log("success");
+    var formdata = new FormData();
+    formdata.append("image", fileList[0].originFileObj);
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("token", localStorage.getItem("airbnbToken"));
+
+    var requestOptions = {
+      method: "POST",
+      body: formdata,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://api.imgbb.com/1/upload?key=7fa3fd0239a4d88f837cb9ecfa505708",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result.data.display_url);
+
+        let raw = JSON.stringify({
+          title: title,
+          description: description,
+          districtId: district,
+          cityId: city,
+          images: result.data.display_url,
+          price: price,
+          bedrooms: bedRooms,
+          bathrooms: bathRooms,
+          size: propertySize,
+        });
+        console.log(raw);
+        fetch("https://airbnb-iq.herokuapp.com/v1/postproperty", {
+          method: "POST",
+          headers: myHeaders,
+          body: raw,
+          redirect: "follow",
+        })
+          .then((response) => response.text())
+          .then((result) => {
+            console.log(JSON.parse(result));
+          })
+          .catch((error) => console.log("error", error));
+      })
+      .catch((error) => console.log("error", error));
     handleNext();
   };
 

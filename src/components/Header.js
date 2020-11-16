@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -31,6 +32,28 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header(props) {
   const classes = useStyles();
+  let history = useHistory();
+
+  const handleBecomeHost = () => {
+    let myHeaders = new Headers();
+    myHeaders.append("token", localStorage.getItem("airbnbToken"));
+    myHeaders.append("Content-Type", "application/json");
+
+    let requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch("https://airbnb-iq.herokuapp.com/v1/becomehost", requestOptions)
+      .then((response) => response.text())
+      .then((result) => {
+        props.setIsOwner(true);
+        localStorage.setItem("owner", true);
+        history.push("/post-property");
+      })
+      .catch((error) => console.log("error", error));
+  };
 
   const handleLogout = () => {
     props.setLoggedIn(false);
@@ -54,8 +77,9 @@ export default function Header(props) {
   const loggedInBtns = () => {
     return (
       <>
-        <button onClick={handleLogout}>Sign Out</button>
         <NotificationBadge />
+        <button onClick={handleBecomeHost}>Become a host</button>
+        <button onClick={handleLogout}>Sign Out</button>
       </>
     );
   };
