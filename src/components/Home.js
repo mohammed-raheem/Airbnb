@@ -121,22 +121,23 @@ function Home() {
     e.preventDefault();
 
     let config = {};
-
     if (city) {
       config = {
         method: "get",
         url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${city[0]}`,
+        // url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${city[0]}`,
       };
     } else if (district) {
       config = {
         method: "get",
-        url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${district[0][0]}`,
+        url: `https://airbnb-iq.herokuapp.com/v1/districtproperties/${district[0][0]}`,
+        // url: `https://airbnb-iq.herokuapp.com/v1/city/properties/${district[0][0]}`,
       };
     }
 
     Axios(config)
       .then(function (response) {
-        console.log(JSON.stringify(response.data));
+        console.log(response.data);
       })
       .catch(function (error) {
         console.log(error);

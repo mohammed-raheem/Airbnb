@@ -12,6 +12,13 @@ import Container from "@material-ui/core/Container";
 import Page from "./Page";
 
 const useStyles = makeStyles((theme) => ({
+  cardActions: {
+    justifyContent: "space-between",
+    padding: "8px 15px",
+  },
+  reserveBtn: {
+    width: "40%",
+  },
   icon: {
     marginRight: theme.spacing(2),
   },
@@ -48,12 +55,14 @@ const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 export default function Album() {
   const classes = useStyles();
 
+  const handleReserve = () => {};
+
   return (
     <Page title="Properties">
       <Container className={classes.cardGrid} maxWidth="xl">
         <Grid container spacing={2}>
           {cards.map((card) => (
-            <Grid item key={card} xs={12} sm={6} md={2}>
+            <Grid item key={card} xs={12} sm={6} md={3}>
               <Card className={classes.card}>
                 <CardMedia
                   className={classes.cardMedia}
@@ -62,14 +71,19 @@ export default function Album() {
                 />
                 <CardContent className={classes.cardContent}>
                   <Typography gutterBottom variant="h5" component="h2">
-                    Heading
+                    Property title header testing the header
                   </Typography>
-                  <Typography>400$/mo</Typography>
                 </CardContent>
-                <CardActions>
-                  <Button size="small" color="primary">
+                <CardActions className={classes.cardActions}>
+                  <Button
+                    className={classes.reserveBtn}
+                    variant="outlined"
+                    color="primary"
+                    onClick={handleReserve}
+                  >
                     Reserve
                   </Button>
+                  <Typography>$400 / month</Typography>
                 </CardActions>
               </Card>
             </Grid>

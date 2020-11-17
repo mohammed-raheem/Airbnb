@@ -28,6 +28,28 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     marginLeft: theme.spacing(2),
   },
+  becomeHost: {
+    backgroundColor: "transparent",
+    border: "none",
+    fontWeight: "bold",
+    marginRight: "12px",
+    marginLeft: "5px",
+    color: "#fff",
+    cursor: "pointer",
+    "&:focus": {
+      outline: "none",
+    },
+  },
+  logout: {
+    backgroundColor: "transparent",
+    border: "none",
+    fontWeight: "bold",
+    color: "#fff",
+    cursor: "pointer",
+    "&:focus": {
+      outline: "none",
+    },
+  },
 }));
 
 export default function Header(props) {
@@ -78,8 +100,12 @@ export default function Header(props) {
     return (
       <>
         <NotificationBadge />
-        <button onClick={handleBecomeHost}>Become a host</button>
-        <button onClick={handleLogout}>Sign Out</button>
+        <button onClick={handleBecomeHost} className={classes.becomeHost}>
+          Become a host
+        </button>
+        <button onClick={handleLogout} className={classes.logout}>
+          Sign Out
+        </button>
       </>
     );
   };

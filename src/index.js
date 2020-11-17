@@ -60,7 +60,7 @@ function App() {
           <Property />
         </Route>
         <Route path="/post-property" exact>
-          {isOwner ? <PostProperty /> : <Redirect to="/" />}
+          {loggedIn && isOwner ? <PostProperty /> : <Redirect to="/" />}
         </Route>
         <Route path="/notifications" exact>
           <NotificationsPage />

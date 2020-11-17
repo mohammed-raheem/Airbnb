@@ -111,7 +111,9 @@ export default function Checkout() {
     setActiveStep(activeStep - 1);
   };
 
-  const handleComplete = () => {
+  // FIXME: use async await in this functions
+
+  const handleComplete = async () => {
     var formdata = new FormData();
     formdata.append("image", fileList[0].originFileObj);
     var myHeaders = new Headers();
@@ -124,12 +126,12 @@ export default function Checkout() {
       redirect: "follow",
     };
 
-    fetch(
+    await fetch(
       "https://api.imgbb.com/1/upload?key=7fa3fd0239a4d88f837cb9ecfa505708",
       requestOptions
     )
       .then((response) => response.json())
-      .then((result) => {
+      .then(async (result) => {
         console.log(result.data.display_url);
 
         let raw = JSON.stringify({
@@ -143,8 +145,7 @@ export default function Checkout() {
           bathrooms: bathRooms,
           size: propertySize,
         });
-        console.log(raw);
-        fetch("https://airbnb-iq.herokuapp.com/v1/postproperty", {
+        await fetch("https://airbnb-iq.herokuapp.com/v1/postproperty", {
           method: "POST",
           headers: myHeaders,
           body: raw,
