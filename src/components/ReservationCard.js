@@ -30,7 +30,7 @@ const useStyles = makeStyles({
 });
 
 export default function ReservationCard() {
-  let price = 400;
+  let price = 500;
   const [totalPrice, setTotlaPrice] = useState(price);
 
   const classes = useStyles();

@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 
 import NotificationBadge from "./NotificationBadge";
+import ChatBadge from "./ChatBadge";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -99,6 +100,7 @@ export default function Header(props) {
   const loggedInBtns = () => {
     return (
       <>
+        <ChatBadge />
         <NotificationBadge />
         <button onClick={handleBecomeHost} className={classes.becomeHost}>
           Become a host
@@ -117,7 +119,7 @@ export default function Header(props) {
           <Toolbar>
             <Typography variant="h6" className={classes.title}>
               <Link to="/" className={classes.logo}>
-                Airbnb
+                DAR
               </Link>
             </Typography>
             {props.loggedIn ? loggedInBtns() : loggedOutBtns()}

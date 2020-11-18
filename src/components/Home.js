@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useHistory } from "react-router-dom";
 import Container from "@material-ui/core/Container";
 import { makeStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
@@ -15,7 +16,7 @@ import Page from "./Page";
 const useStyles = makeStyles((theme) => ({
   home: {
     backgroundImage:
-      "url(https://a0.muscache.com/im/pictures/2ce67edf-49f9-4666-9c51-94419a9b7e6a.jpg?im_w=1200)",
+      "url(https://images.unsplash.com/photo-1570815086038-21b7ad0c5f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1189&q=80)",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat",
@@ -43,8 +44,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function Home() {
+function Home(props) {
   const classes = useStyles();
+  let history = useHistory();
 
   // Home States
   const [province, setProvince] = useState();
@@ -137,7 +139,9 @@ function Home() {
 
     Axios(config)
       .then(function (response) {
-        console.log(response.data);
+        // console.log(response.data.data);
+        props.setSearchResults(response.data.data);
+        history.push("/properties");
       })
       .catch(function (error) {
         console.log(error);
@@ -188,7 +192,7 @@ function Home() {
                   className={classes.selectField}
                 >
                   <InputLabel id="demo-simple-select-filled-label">
-                    Province
+                    Province *
                   </InputLabel>
                   <Select
                     labelId="demo-simple-select-filled-label"

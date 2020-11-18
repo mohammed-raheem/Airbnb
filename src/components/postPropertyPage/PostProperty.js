@@ -69,6 +69,7 @@ export default function Checkout() {
 
   // Property images states
   const [fileList, setFileList] = useState([]);
+  const [imagesArray, setImagesArray] = useState([]);
 
   const steps = ["Property Description", "Address", "Images"];
 
@@ -110,8 +111,6 @@ export default function Checkout() {
   const handleBack = () => {
     setActiveStep(activeStep - 1);
   };
-
-  // FIXME: use async await in this functions
 
   const handleComplete = async () => {
     var formdata = new FormData();

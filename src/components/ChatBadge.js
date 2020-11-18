@@ -1,7 +1,7 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Badge from "@material-ui/core/Badge";
-import MailIcon from "@material-ui/icons/Mail";
+import ChatIcon from "@material-ui/icons/Chat";
 import IconButton from "@material-ui/core/IconButton";
 import { useHistory } from "react-router-dom";
 
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function NotificationBadge() {
+export default function ChatBadge() {
   const classes = useStyles();
   let history = useHistory();
 
@@ -26,7 +26,7 @@ export default function NotificationBadge() {
     <div className={classes.root}>
       <IconButton onClick={handleClick}>
         <Badge max={999} color="secondary">
-          <MailIcon />
+          <ChatIcon />
         </Badge>
       </IconButton>
     </div>

@@ -19,10 +19,10 @@ function App() {
   const [loggedIn, setLoggedIn] = useState(
     Boolean(localStorage.getItem("airbnbToken"))
   );
-
   const [isOwner, setIsOwner] = useState(
     Boolean(localStorage.getItem("owner"))
   );
+  const [searchResults, setSearchResults] = useState([]);
 
   return (
     <BrowserRouter>
@@ -34,7 +34,7 @@ function App() {
       />
       <Switch>
         <Route path="/" exact>
-          <Home />
+          <Home setSearchResults={setSearchResults} />
         </Route>
         <Route path="/signup" exact>
           {loggedIn ? <Redirect to="/" /> : <SignUp />}
@@ -54,10 +54,10 @@ function App() {
           )}
         </Route>
         <Route path="/properties" exact>
-          <Properties />
+          <Properties searchResults={searchResults} />
         </Route>
         <Route path="/property" exact>
-          <Property />
+          <Property searchResults={searchResults} />
         </Route>
         <Route path="/post-property" exact>
           {loggedIn && isOwner ? <PostProperty /> : <Redirect to="/" />}

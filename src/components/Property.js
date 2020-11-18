@@ -12,15 +12,19 @@ const useStyles = makeStyles({
   },
 });
 
-function Property() {
+function Property(props) {
   const classes = useStyles();
+
+  console.log(props.searchResults);
 
   return (
     <Box pt="50px" className={classes.root}>
       <Page title="Property Name">
         <Container>
           <Box mb="20px">
-            <Typography variant="h4">Property Title</Typography>
+            <Typography variant="h4">
+              Studio-Apartments in Berlin Mitte
+            </Typography>
             <Typography variant="body2">Feedback - City Name</Typography>
           </Box>
           <Box mb="20px">

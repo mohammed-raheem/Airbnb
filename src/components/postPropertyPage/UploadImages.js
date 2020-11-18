@@ -1,4 +1,6 @@
 import { Upload } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
+
 const UploadImages = ({ setFileList, fileList }) => {
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -27,6 +29,7 @@ const UploadImages = ({ setFileList, fileList }) => {
       onChange={onChange}
       onPreview={onPreview}
       beforeUpload={() => false}
+      multiple={true}
     >
       {fileList.length < 1 && "+ Image"}
     </Upload>
